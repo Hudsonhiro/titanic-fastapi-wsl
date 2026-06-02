@@ -38,9 +38,14 @@ def prever_sobrevivencia(passageiro: Passageiro):
         passageiro.Fare
     ]]
     
-    # Faz a predição e calcula a probabilidade
-    predicao = modelo.predict(dados_entrada)
-    probabilidade = modelo.predict_proba(dados_entrada)[predicao] * 100
+    # 1. Faz a predição (retorna um número inteiro: 0 ou 1)
+    predicao = int(modelo.predict(dados_entrada)[0])
+    
+    # 2. CORREÇÃO DA PROBABILIDADE:
+    # modelo.predict_proba(dados_entrada)[0] extrai a lista simples [chance_morrer, chance_sobreviver]
+    # O [predicao] no final pega dinamicamente o valor da decisão tomada pela IA
+    probabilidades = modelo.predict_proba(dados_entrada)[0]
+    probabilidade_final = probabilidades[predicao] * 100
     
     resultado = "Sobreviveu" if predicao == 1 else "Não Sobreviveu"
     
@@ -52,5 +57,5 @@ def prever_sobrevivencia(passageiro: Passageiro):
             "tarifa": passageiro.Fare
         },
         "resultado_predicao": resultado,
-        "confianca_do_modelo": f"{probabilidade:.2f}%"
+        "confianca_do_modelo": f"{probabilidade_final:.2f}%"
     }
